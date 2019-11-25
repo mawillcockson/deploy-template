@@ -1,0 +1,12 @@
+---
+- name: Install git
+  package:
+    name: git
+    state: present
+
+- name: Download code
+  command: "git clone --depth 1 --single-branch {{ item }}"
+  loop:
+    - https://github.com/unglazedpottery/movementt-front.git
+    - https://github.com/unglazedpottery/movementt-back.git
+...
