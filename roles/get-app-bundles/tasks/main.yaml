@@ -5,8 +5,56 @@
     state: present
 
 - name: Download code
-  command: "git clone --depth 1 --single-branch {{ item }}"
+  git:
+    repo: "{{ item.0 }}"
+    clone: yes
+    depth: 1
+    dest: "{{ item.1 }}"
+  become: False
   loop:
-    - https://github.com/unglazedpottery/movementt-front.git
-    - https://github.com/unglazedpottery/movementt-back.git
+    - 
+      - https://github.com/unglazedpottery/movementt-front.git
+      - "/home/{{ provision_username }}/Movementt-front"
+    - 
+      - https://github.com/unglazedpottery/movementt-back.git
+      - "/home/{{ provision_username }}/Movementt-back"
+
+- name: Get RVM install script
+  get_url:
+    url: https://get.rvm.io
+    dest: "/home/{{ provision_username }}/rvm-install.sh"
+    owner: "{{ provision_username }}"
+    mode: "u=rwx,g=rx,o=rx"
+
+- name: Install RVM
+  command: "/home/{{ provision_username }}/rvm-install.sh stable"
+  args:
+    creates: "/home/{{ provision_username }}/.rvm"
+  become: False
+
+- name: Install ruby-2.6.1
+  command: "/home/{{ provision_username }}/.rvm/bin/rvm install ruby-2.6.1"
+  become: False
+# when: "ruby-2.6.1" not in `rvm list`
+
+- name: Install bundler
+  command: "gem install bundler"
+  become: False
+
+- name: Install gems with bundler
+  command: bundle install
+  become: False
+  args:
+    chdir: "/home/{{ provision_username }}/Movementt-back"
+
+- name: Install npm
+  package:
+    name: npm
+    state: present
+
+- name: Install npm packages
+  command: npm install
+  become: False
+  args:
+    chdir: "/home/{{ provision_username }}/Movementt-front"
 ...
