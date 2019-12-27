@@ -21,6 +21,5 @@
     - { role: setup,    tags: ['setup']                                         }
     - { role: firewall, tags: ['firewall']                                      }
     - { role: caddy,    tags: ['caddy']                                         }
-    - { role: dovecot,  tags: ['dovecot']                                       }
     - { role: dotfiles, tags: ['dotfiles'], when: setup_dotfiles|default(false) }
 ...
